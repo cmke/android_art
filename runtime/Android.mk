@@ -395,12 +395,30 @@ $$(ENUM_OPERATOR_OUT_GEN): $$(GENERATED_SRC_DIR)/%_operator_out.cc : $(LOCAL_PAT
   ifeq ($$(art_target_or_host),target)
     $$(eval $$(call set-target-local-clang-vars))
     $$(eval $$(call set-target-local-cflags-vars,$(2)))
+
+    ifeq ($$(TARGET_ARCH),arm)
+      ifeq ($$(TARGET_GCC_VERSION),4.9-sm)
+        ART_TOOLCHAIN := 4.8-sm
+      endif
+      ifeq ($$(TARGET_GCC_VERSION),4.9)
+        ART_TOOLCHAIN := 4.8
+      endif
+    endif
+
     # TODO: Loop with ifeq, ART_TARGET_CLANG
     ifneq ($$(ART_TARGET_CLANG_$$(TARGET_ARCH)),true)
       LOCAL_SRC_FILES_$$(TARGET_ARCH) += $$(LIBART_GCC_ONLY_SRC_FILES)
+      ifdef ART_TOOLCHAIN
+        LOCAL_CC  := $$(TARGET_TOOLCHAIN_ROOT)/../arm-linux-androideabi-$$(ART_TOOLCHAIN)/bin/arm-linux-androideabi-gcc$$(HOST_EXECUTABLE_SUFFIX)
+        LOCAL_CXX := $$(TARGET_TOOLCHAIN_ROOT)/../arm-linux-androideabi-$$(ART_TOOLCHAIN)/bin/arm-linux-androideabi-g++$$(HOST_EXECUTABLE_SUFFIX)
+      endif
     endif
     ifneq ($$(ART_TARGET_CLANG_$$(TARGET_2ND_ARCH)),true)
       LOCAL_SRC_FILES_$$(TARGET_2ND_ARCH) += $$(LIBART_GCC_ONLY_SRC_FILES)
+      ifdef ART_TOOLCHAIN
+        LOCAL_CC  := $$(TARGET_TOOLCHAIN_ROOT)/../arm-linux-androideabi-$$(ART_TOOLCHAIN)/bin/arm-linux-androideabi-gcc$$(HOST_EXECUTABLE_SUFFIX)
+        LOCAL_CXX := $$(TARGET_TOOLCHAIN_ROOT)/../arm-linux-androideabi-$$(ART_TOOLCHAIN)/bin/arm-linux-androideabi-g++$$(HOST_EXECUTABLE_SUFFIX)
+      endif
     endif
   else # host
     LOCAL_CLANG := $$(ART_HOST_CLANG)

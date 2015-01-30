@@ -193,6 +193,22 @@ define build-libart-compiler
     LOCAL_SHARED_LIBRARIES += libartd
   endif
 
+  ifeq ($$(TARGET_ARCH),arm)
+    ifeq ($$(TARGET_GCC_VERSION),4.9-sm)
+      ART_TOOLCHAIN := 4.8-sm
+    endif
+    ifeq ($$(TARGET_GCC_VERSION),4.9)
+      ART_TOOLCHAIN := 4.8
+    endif
+  endif
+
+  ifdef ART_TOOLCHAIN
+    ifeq ($$(art_target_or_host),target)
+      LOCAL_CC  := $$(TARGET_TOOLCHAIN_ROOT)/../arm-linux-androideabi-$$(ART_TOOLCHAIN)/bin/arm-linux-androideabi-gcc$$(HOST_EXECUTABLE_SUFFIX)
+      LOCAL_CXX := $$(TARGET_TOOLCHAIN_ROOT)/../arm-linux-androideabi-$$(ART_TOOLCHAIN)/bin/arm-linux-androideabi-g++$$(HOST_EXECUTABLE_SUFFIX)
+    endif
+  endif
+
   LOCAL_MODULE_TAGS := optional
   LOCAL_MODULE_CLASS := SHARED_LIBRARIES
 
